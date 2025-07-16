@@ -24,6 +24,8 @@ MODELS_WITH_PATCHES = [*MULTIPLIERS]
 def count_tokens_for_image_with_detail(
     image: Path, model: str, detail: Literal["low", "high"]
 ) -> int:
+    # Source: https://platform.openai.com/docs/guides/images-vision?api-mode=chat#gpt-4o-gpt-4-1-gpt-4o-mini-cua-and-o-series-except-o4-mini
+
     if detail == "low":
         # "Regardless of input size, low detail images are a fixed cost."
         return TOKENS[model]["base"]
@@ -57,6 +59,8 @@ def count_tokens_for_image_with_detail(
 
 
 def count_tokens_for_image_with_patches(image: Path, model: str) -> int:
+    # Source: https://platform.openai.com/docs/guides/images-vision?api-mode=chat#gpt-4-1-mini-gpt-4-1-nano-o4-mini
+
     with Image.open(image) as img:
         width, height = img.size
 

@@ -4,7 +4,7 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
 
-Estimate the costs of running benchmarks across different model providers.
+Offline utility functions for estimating costs across different model providers.
 
 - [Source code](https://github.com/joaopalmeiro/praicing)
 - [PyPI package](https://pypi.org/project/praicing/)
