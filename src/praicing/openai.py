@@ -1,17 +1,24 @@
 import math
 from pathlib import Path
-from typing import Literal
+from typing import Literal, TypedDict
 
 from PIL import Image
 
-BASE_TOKENS: dict[str, int] = {"gpt-4o-2024-08-06": 85}
 
-TILE_TOKENS: dict[str, int] = {"gpt-4o-2024-08-06": 170}
+class Tokens(TypedDict):
+    base: int
+    tile: int
+
+
+TOKENS: dict[str, Tokens] = {"gpt-4o-2024-08-06": {"base": 85, "tile": 170}}
 
 PATCH_SIZE = 32
 MAX_PATCHES = 1536
 
 MULTIPLIERS = {"gpt-4.1-mini-2025-04-14": 1.62, "gpt-4.1-nano-2025-04-14": 2.46}
+
+MODELS_WITH_DETAIL = [*TOKENS]
+MODELS_WITH_PATCHES = [*MULTIPLIERS]
 
 
 def count_tokens_for_image_with_detail(
@@ -19,7 +26,7 @@ def count_tokens_for_image_with_detail(
 ) -> int:
     if detail == "low":
         # "Regardless of input size, low detail images are a fixed cost."
-        return BASE_TOKENS[model]
+        return TOKENS[model]["base"]
 
     with Image.open(image) as img:
         width, height = img.size
@@ -44,13 +51,12 @@ def count_tokens_for_image_with_detail(
     total_tiles = tiles_wide * tiles_high
 
     # "4. Add the base tokens to the total"
-    tiles_tokens = total_tiles * TILE_TOKENS[model]
-    total_tokens = tiles_tokens + BASE_TOKENS[model]
+    total_tokens = TOKENS[model]["base"] + total_tiles * TOKENS[model]["tile"]
 
     return total_tokens
 
 
-def count_tokens_for_image(image: Path, model: str) -> int:
+def count_tokens_for_image_with_patches(image: Path, model: str) -> int:
     with Image.open(image) as img:
         width, height = img.size
 
