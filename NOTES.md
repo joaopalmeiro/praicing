@@ -12,6 +12,17 @@
 - https://docs.anthropic.com/en/docs/build-with-claude/vision
   - "Very small images under 200 pixels on any given edge may degrade performance."
 - https://platform.openai.com/tokenizer
+- https://www.stainless.com/
+- https://github.com/openai/openai-python?tab=readme-ov-file#using-types
+  - https://pypi.org/project/openai/
+  - https://github.com/openai/openai-python/blob/v1.97.0/src/openai/types/chat/chat_completion_message_param.py
+  - https://github.com/openai/openai-python/blob/v1.97.0/src/openai/types/chat/chat_completion_user_message_param.py
+  - https://github.com/openai/openai-python/blob/v1.97.0/src/openai/types/chat/chat_completion_content_part_image_param.py
+  - [Add GPT-4.1 support](https://github.com/openai/tiktoken/issues/395) issue
+  - https://huggingface.co/datasets/openai/mrcr#how-to-run: `MODEL= "gpt-4.1"` + `enc = tiktoken.get_encoding("o200k_base")`
+  - https://community.openai.com/t/whats-the-tokenization-algorithm-gpt-4-1-uses/1245758: "GPT-4.1 uses the same tokenizer as 4o; same encoding."
+  - https://github.com/openai/openai-python/blob/v1.97.0/src/openai/types/chat/completion_create_params.py#L37: `messages: Required[Iterable[ChatCompletionMessageParam]]`
+  - https://github.com/openai/openai-python/blob/v1.97.0/api.md?plain=1#L42
 
 ## Commands
 

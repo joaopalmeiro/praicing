@@ -1,7 +1,10 @@
 import math
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Literal, TypedDict
 
+import tiktoken
+from openai.types.chat import ChatCompletionMessageParam
 from PIL import Image
 
 
@@ -90,3 +93,18 @@ def count_tokens_for_image_with_patches(image: Path, model: str) -> int:
     total_tokens = math.ceil(patches * MULTIPLIERS[model])
 
     return total_tokens
+
+
+def count_tokens_for_text(text: str, model: str) -> int:
+    try:
+        encoding = tiktoken.encoding_for_model(model)
+    except KeyError:
+        encoding = tiktoken.get_encoding("o200k_base")
+
+    return len(encoding.encode(text))
+
+
+def count_tokens_for_messages(
+    messages: Iterable[ChatCompletionMessageParam], model: str
+) -> int:
+    pass
