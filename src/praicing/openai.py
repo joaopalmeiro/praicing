@@ -13,6 +13,39 @@ class Tokens(TypedDict):
     tile: int
 
 
+COSTS_MTOK = {
+    "gpt-4o-2024-08-06": {
+        "base": {
+            "input": 2.5,
+            "output": 10,
+        },
+        "batch": {
+            "input": 1.25,
+            "output": 5,
+        },
+    },
+    "gpt-4.1-mini-2025-04-14": {
+        "base": {
+            "input": 0.4,
+            "output": 1.6,
+        },
+        "batch": {
+            "input": 0.2,
+            "output": 0.8,
+        },
+    },
+    "gpt-4.1-nano-2025-04-14": {
+        "base": {
+            "input": 0.1,
+            "output": 0.4,
+        },
+        "batch": {
+            "input": 0.05,
+            "output": 0.2,
+        },
+    },
+}
+
 TOKENS: dict[str, Tokens] = {"gpt-4o-2024-08-06": {"base": 85, "tile": 170}}
 
 PATCH_SIZE = 32
@@ -130,3 +163,16 @@ def count_tokens_for_messages(
                             )
 
     return total_tokens
+
+
+def estimate_costs_for_messages(
+    messages: Iterable[ChatCompletionMessageParam],
+    model: str,
+    pricing: Literal["base", "batch"] = "base",
+) -> float:
+    total_tokens = count_tokens_for_messages(messages, model)
+
+    input_cost = COSTS_MTOK[model][pricing]["input"]
+    total_cost = (input_cost * total_tokens) / 1_000_000
+
+    return total_cost
