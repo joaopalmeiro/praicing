@@ -1,7 +1,7 @@
 import math
 from collections.abc import Iterable
-from pathlib import Path
 from typing import Literal, TypedDict
+from urllib.request import urlopen
 
 import tiktoken
 from openai.types.chat import ChatCompletionMessageParam
@@ -25,7 +25,7 @@ MODELS_WITH_PATCHES = [*MULTIPLIERS]
 
 
 def count_tokens_for_image_with_detail(
-    image: Path, model: str, detail: Literal["low", "high"]
+    image_url: str, model: str, detail: Literal["low", "high"]
 ) -> int:
     # Source: https://platform.openai.com/docs/guides/images-vision?api-mode=chat#gpt-4o-gpt-4-1-gpt-4o-mini-cua-and-o-series-except-o4-mini
 
@@ -33,7 +33,7 @@ def count_tokens_for_image_with_detail(
         # "Regardless of input size, low detail images are a fixed cost."
         return TOKENS[model]["base"]
 
-    with Image.open(image) as img:
+    with Image.open(urlopen(image_url)) as img:
         width, height = img.size
 
     # "1. Scale to fit in a 2048px x 2048px square, maintaining original aspect ratio"
@@ -61,10 +61,10 @@ def count_tokens_for_image_with_detail(
     return total_tokens
 
 
-def count_tokens_for_image_with_patches(image: Path, model: str) -> int:
+def count_tokens_for_image_with_patches(image_url: str, model: str) -> int:
     # Source: https://platform.openai.com/docs/guides/images-vision?api-mode=chat#gpt-4-1-mini-gpt-4-1-nano-o4-mini
 
-    with Image.open(image) as img:
+    with Image.open(urlopen(image_url)) as img:
         width, height = img.size
 
     # "A. Calculate the number of 32px x 32px patches that are needed to fully cover the image"
@@ -107,4 +107,26 @@ def count_tokens_for_text(text: str, model: str) -> int:
 def count_tokens_for_messages(
     messages: Iterable[ChatCompletionMessageParam], model: str
 ) -> int:
-    pass
+    total_tokens = 0
+
+    for message in messages:
+        if message["role"] == "user":
+            if isinstance(message["content"], str):
+                total_tokens += count_tokens_for_text(message["content"], model)
+            else:
+                for part in message["content"]:
+                    if part["type"] == "text":
+                        total_tokens += count_tokens_for_text(part["text"], model)
+                    elif part["type"] == "image_url":
+                        if model in MODELS_WITH_DETAIL:
+                            total_tokens += count_tokens_for_image_with_detail(
+                                part["image_url"]["url"],
+                                model,
+                                part["image_url"]["detail"],
+                            )
+                        elif model in MODELS_WITH_PATCHES:
+                            total_tokens += count_tokens_for_image_with_patches(
+                                part["image_url"]["url"], model
+                            )
+
+    return total_tokens

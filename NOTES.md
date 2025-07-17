@@ -23,6 +23,9 @@
   - https://community.openai.com/t/whats-the-tokenization-algorithm-gpt-4-1-uses/1245758: "GPT-4.1 uses the same tokenizer as 4o; same encoding."
   - https://github.com/openai/openai-python/blob/v1.97.0/src/openai/types/chat/completion_create_params.py#L37: `messages: Required[Iterable[ChatCompletionMessageParam]]`
   - https://github.com/openai/openai-python/blob/v1.97.0/api.md?plain=1#L42
+- https://mypy.readthedocs.io/en/stable/typed_dict.html:
+  - "Since TypedDicts are really just regular dicts at runtime, it is not possible to use `isinstance` checks to distinguish between different variants of a Union of TypedDict in the same way you can with regular objects."
+  - https://mypy.readthedocs.io/en/stable/literal_types.html#tagged-unions
 
 ## Commands
 
