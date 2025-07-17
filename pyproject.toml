@@ -1,6 +1,6 @@
 [project]
 name = "praicing"
-version = "0.0.0"
+version = "0.0.1"
 description = "Offline utility functions for estimating costs across different model providers."
 readme = "README.md"
 requires-python = ">=3.10"
