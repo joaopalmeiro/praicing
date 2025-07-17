@@ -73,11 +73,7 @@ echo "v$(uv version --short)" | pbcopy
 - Check [GitHub](https://github.com/joaopalmeiro/praicing/tags).
 
 ```bash
-hatch publish
+uv publish
 ```
 
 - Check [PyPI](https://pypi.org/project/praicing/).
-
-```bash
-uv publish
-```
