@@ -13,7 +13,7 @@ class Tokens(TypedDict):
     tile: int
 
 
-COSTS_MTOK = {
+COSTS_MTOK: dict[str, dict[str, dict[str, float]]] = {
     "gpt-4o-2024-08-06": {
         "base": {
             "input": 2.5,
@@ -44,9 +44,44 @@ COSTS_MTOK = {
             "output": 0.2,
         },
     },
+    "gpt-4.1-2025-04-14": {
+        "base": {
+            "input": 2,
+            "output": 8,
+        },
+        "batch": {
+            "input": 1,
+            "output": 4,
+        },
+    },
+    "gpt-4o-mini-2024-07-18": {
+        "base": {
+            "input": 0.15,
+            "output": 0.6,
+        },
+        "batch": {
+            "input": 0.075,
+            "output": 0.3,
+        },
+    },
+    "o3-2025-04-16": {
+        "base": {
+            "input": 2,
+            "output": 8,
+        },
+        "batch": {
+            "input": 1,
+            "output": 4,
+        },
+    },
 }
 
-TOKENS: dict[str, Tokens] = {"gpt-4o-2024-08-06": {"base": 85, "tile": 170}}
+TOKENS: dict[str, Tokens] = {
+    "gpt-4o-2024-08-06": {"base": 85, "tile": 170},
+    "gpt-4.1-2025-04-14": {"base": 85, "tile": 170},
+    "gpt-4o-mini-2024-07-18": {"base": 2833, "tile": 5667},
+    "o3-2025-04-16": {"base": 75, "tile": 150},
+}
 
 PATCH_SIZE = 32
 MAX_PATCHES = 1536
@@ -176,3 +211,15 @@ def estimate_costs_for_messages(
     total_cost = (input_cost * total_tokens) / 1_000_000
 
     return total_cost
+
+
+def estimate_costs_for_tokens(
+    input_tokens: int,
+    output_tokens: int,
+    model: str,
+    pricing: Literal["base", "batch"] = "base",
+) -> float:
+    input_cost = (COSTS_MTOK[model][pricing]["input"] * input_tokens) / 1_000_000
+    output_cost = (COSTS_MTOK[model][pricing]["output"] * output_tokens) / 1_000_000
+
+    return input_cost + output_cost
