@@ -74,6 +74,16 @@ COSTS_MTOK: dict[str, dict[str, dict[str, float]]] = {
             "output": 4,
         },
     },
+    "o4-mini-2025-04-16": {
+        "base": {
+            "input": 1.1,
+            "output": 4.4,
+        },
+        "batch": {
+            "input": 0.55,
+            "output": 2.2,
+        },
+    },
 }
 
 TOKENS: dict[str, Tokens] = {
@@ -86,7 +96,11 @@ TOKENS: dict[str, Tokens] = {
 PATCH_SIZE = 32
 MAX_PATCHES = 1536
 
-MULTIPLIERS = {"gpt-4.1-mini-2025-04-14": 1.62, "gpt-4.1-nano-2025-04-14": 2.46}
+MULTIPLIERS = {
+    "gpt-4.1-mini-2025-04-14": 1.62,
+    "gpt-4.1-nano-2025-04-14": 2.46,
+    "o4-mini-2025-04-16": 1.72,
+}
 
 MODELS_WITH_DETAIL = [*TOKENS]
 MODELS_WITH_PATCHES = [*MULTIPLIERS]
@@ -124,9 +138,7 @@ def count_tokens_for_image_with_detail(
     total_tiles = tiles_wide * tiles_high
 
     # "4. Add the base tokens to the total"
-    total_tokens = TOKENS[model]["base"] + total_tiles * TOKENS[model]["tile"]
-
-    return total_tokens
+    return TOKENS[model]["base"] + total_tiles * TOKENS[model]["tile"]
 
 
 def count_tokens_for_image_with_patches(image_url: str, model: str) -> int:
@@ -158,9 +170,7 @@ def count_tokens_for_image_with_patches(image_url: str, model: str) -> int:
     patches = patches_width * patches_height
     patches = min(patches, MAX_PATCHES)
 
-    total_tokens = math.ceil(patches * MULTIPLIERS[model])
-
-    return total_tokens
+    return math.ceil(patches * MULTIPLIERS[model])
 
 
 def count_tokens_for_text(text: str, model: str) -> int:
@@ -208,9 +218,8 @@ def estimate_costs_for_messages(
     total_tokens = count_tokens_for_messages(messages, model)
 
     input_cost = COSTS_MTOK[model][pricing]["input"]
-    total_cost = (input_cost * total_tokens) / 1_000_000
 
-    return total_cost
+    return (input_cost * total_tokens) / 1_000_000
 
 
 def estimate_costs_for_tokens(
